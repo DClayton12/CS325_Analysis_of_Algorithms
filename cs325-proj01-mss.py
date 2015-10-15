@@ -3,13 +3,22 @@
 import random
 import time
 
-testarrays = [[1, 4, -9, 8, 1, 3, 3, 1, -1, -4, -6, 2, 8, 19, -10, -11],
-[2, 9, 8, 6, 5, -11, 9, -11, 7, 5, -1, -8, -3, 7, -2],
-[10, -11, -1, -9, 33, -45, 23, 24, -1, -7, -8, 19],
-[31,-41, 59, 26, -53, 58, 97, -93, -23, 84],
-[3, 2, 1, 1, -8, 1, 1, 2, 3],
-[12, 99, 99, -99, -27, 0, 0, 0, -3, 10],
-[-2, 1, -3, 4, -1, 2, 1, -5, 4]]
+testarrays = []
+
+#read in arrays from text file
+def load_arrays():
+    with open('mss_testproblems.txt') as f:
+        for line in f:
+            inputarray = []
+            numstring = line.strip().replace("'", "").replace("[", "").replace("]", "").replace(",", " ")
+            numbers = map(int, numstring.split())
+
+            for num in numbers:
+                inputarray.append(num)
+            testarrays.append(inputarray)
+
+load_arrays()
+
 
 # Algorithm 1 - theta(n^3)
 #Indices i and j define the start and end of subarray sizes from 1 to n.
@@ -17,6 +26,8 @@ testarrays = [[1, 4, -9, 8, 1, 3, 3, 1, -1, -4, -6, 2, 8, 19, -10, -11],
 def mss_algorithm_01(A):
 
     max_sum = A[0]
+    start = None
+    end = None
     for i in range(0, len(A)):
         for j in range(i, len(A)):
             sum = 0
@@ -26,7 +37,8 @@ def mss_algorithm_01(A):
                     max_sum = sum
                     start = i
                     end = j+1
-
+    #if end == 0:
+        #end = 1
     return A[start:end], max_sum
 
 print("Algorithm 1 Results:")
@@ -50,17 +62,18 @@ def mss_algorithm_02(A):
             sum += A[j]
             if sum > max_sum:
                 max_sum = sum
-            elif A[j] > max_sum: 
-                max_sum = A[j]
                 start = i
                 end = j+1
+            elif A[j] > max_sum: 
+                max_sum = A[j]
+
 
     return A[start:end], max_sum
 
 print("Algorithm 2 Results:")
 for A in testarrays:
     results = []
-    results = mss_algorithm_01(A)
+    results = mss_algorithm_02(A)
     print(results[0])
     print(results[1])
     print()
@@ -115,28 +128,33 @@ for A in testarrays:
 
 # Algorithm 4 - theta(n) time
 def mss_algorithm_04(A):
-    sum = A[0]
-    max_sum = A[0]
-    for j in A:
-        curr_start = 0
+    curr_start = float("-inf")
+    curr_end = float("-inf")
+    start = float("-inf")
+    end = float("-inf")
+    max_sum = float("-inf")
+    endsum = float("-inf")
+
+    for j in range(0, len(A)):
+
         curr_end = j
-        if sum > 0:
-            sum += A[j]
+        if endsum > 0:
+            endsum += A[j]
         else:
             curr_start = j
-            sum = A[j]
-        
-        if sum > max_sum:
-            max_sum = sum
+            endsum = A[j]
+
+        if endsum > max_sum:
+            max_sum = endsum
             start = curr_start
-            end = curr_end
+            end = curr_end + 1
         
     return A[start:end], max_sum
 
 print("Algorithm 4 Results:")
 for A in testarrays:
     results = []
-    results = mss_algorithm_01(A)
+    results = mss_algorithm_04(A)
     print(results[0])
     print(results[1])
     print()
