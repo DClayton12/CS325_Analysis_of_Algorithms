@@ -19,26 +19,32 @@ def findFirstMax(A):
 	reverseA = A[::-1]
 	currmax = reverseA[0]
 	currsum = 0
+	begIndex = 0
 
 	for i in reverseA:
 		currsum += i
 		if currsum > currmax:
 			currmax = currsum
+			begIndex=i
 
-	return currmax
+	return [currmax, begIndex]
 
 def findSecondMax(A):
     currsum = 0
     currmax = A[0]
+    endIndex = 0
 
     for i in A:
         currsum += i
         if currsum > currmax:
             currmax = currsum
+	    endIndex = i
 
-    return currmax
+    return [currmax, endIndex]
 
 def mss_algorithm_03(A):
+	leftIndexSum = []
+	rightIndexSum = []
 
 	if len(A) <= 1:
 		return A[0]
@@ -50,15 +56,18 @@ def mss_algorithm_03(A):
 		sum1 = mss_algorithm_03(firstArr) # If maximum subarray is contained entirely in the first half
 		sum2 = mss_algorithm_03(secondArr) # If maximum subarray is contained entirely in the second half
 
-		sum3 = findFirstMax(firstArr) + findSecondMax(secondArr)
+		leftSum,leftIndex = findFirstMax(firstArr)
+		rightSum, rightIndex = findSecondMax(secondArr)
 
-        max_sum =  max([sum1, sum2, sum3])
+		sum3 = leftSum + rightSum
 
-        return max_sum
+        max_sum =  max([sum1, sum3, sum3])
+
+        return A[leftIndex:rightIndex], max_sum
 
 print("Algorithm 3 Results:")
 for A in testarrays:
     results = mss_algorithm_03(A)
-    print(results)
-    #print()
+    print(results[0])
+#    print(results[1])
 
