@@ -1,13 +1,16 @@
 # CS325 - Project 1 - Max Sum Subarray
+#Group 9: Darnel Clayton, Rudy Gonzalez, Brad Parker
 
 import random
 import time
+import sys
 
+sys.setrecursionlimit(1500)
 testarrays = []
 
 #read in arrays from text file
 def load_arrays():
-    with open('mss_testproblems.txt') as f:
+    with open('mss_problems.txt') as f:
         for line in f:
             inputarray = []
             numstring = line.strip().replace("'", "").replace("[", "").replace("]", "").replace(",", " ")
@@ -16,7 +19,7 @@ def load_arrays():
             for num in numbers:
                 inputarray.append(num)
             testarrays.append(inputarray)
-
+    f.close()
 load_arrays()
 
 
@@ -37,17 +40,9 @@ def mss_algorithm_01(A):
                     max_sum = sum
                     start = i
                     end = j+1
-    #if end == 0:
-        #end = 1
+
     return A[start:end], max_sum
 
-print("Algorithm 1 Results:")
-for A in testarrays:
-    results = []
-    results = mss_algorithm_01(A)
-    print(results[0])
-    print(results[1])
-    print()
 
 # Algorithm 2 - theta(n^2)
 #Indices i and j define the start and end of subarray sizes from 1 to n.
@@ -66,17 +61,10 @@ def mss_algorithm_02(A):
                 end = j+1
             elif A[j] > max_sum: 
                 max_sum = A[j]
-
-
+    if end == 0:
+        end = 1
     return A[start:end], max_sum
 
-print("Algorithm 2 Results:")
-for A in testarrays:
-    results = []
-    results = mss_algorithm_02(A)
-    print(results[0])
-    print(results[1])
-    print()
 
 # Algorithm 3 - theta(n lg n)
 def findFirstMax(A):
@@ -120,11 +108,7 @@ def mss_algorithm_03(A):
 
         return max_sum
 
-print("Algorithm 3 Results:")
-for A in testarrays:
-    results = mss_algorithm_03(A)
-    print(results)
-    print()
+
 
 # Algorithm 4 - theta(n) time
 def mss_algorithm_04(A):
@@ -151,14 +135,62 @@ def mss_algorithm_04(A):
         
     return A[start:end], max_sum
 
-print("Algorithm 4 Results:")
-for A in testarrays:
-    results = []
-    results = mss_algorithm_04(A)
-    print(results[0])
-    print(results[1])
-    print()
+# ALGORITHM ACCURACY TESTS
+def test_accuracy():
+    f = open("mss_results.txt", "w")
+    print("Algorithm 1 Results:")
+    f.write("Algorithm 1 Results:" + "\n")
+    for A in testarrays:
+        results = []
+        results = mss_algorithm_01(A)
+        print(results[0])
+        print(results[1])
+        f.write("[")
+        f.write(", ".join(str(elem) for elem in results[0]))
+        f.write("]" + "\n")
+        f.write(str(results[1]) + "\n\n")
+        print()
 
+    print("Algorithm 2 Results:")
+    f.write("Algorithm 2 Results:" + "\n")
+    for A in testarrays:
+        results = []
+        results = mss_algorithm_02(A)
+        print(results[0])
+        print(results[1])
+        f.write("[")
+        f.write(", ".join(str(elem) for elem in results[0]))
+        f.write("]" + "\n")
+        f.write(str(results[1]) + "\n\n")
+        f.write("\n")
+        print()
+
+    print("Algorithm 3 Results:")
+    f.write("Algorithm 3 Results:" + "\n")
+    for A in testarrays:
+        results = mss_algorithm_03(A)
+        print(results)
+        #f.write(results[0])
+        #f.write(results[1])
+        f.write(str(results) + "\n\n")
+        print()
+
+    print("Algorithm 4 Results:")
+    f.write("Algorithm 4 Results:" + "\n")
+    for A in testarrays:
+        results = []
+        results = mss_algorithm_04(A)
+        print(results[0])
+        print(results[1])
+        f.write("[")
+        f.write(", ".join(str(elem) for elem in results[0]))
+        f.write("]" + "\n")
+        f.write(str(results[1]) + "\n\n")
+        f.write("\n")
+        print()
+
+    print("Accuracy Results written to mss_results.txt" + "\n\n")
+    f.close()
 
 
 # ALGORITHM TIMING TESTS
@@ -194,6 +226,8 @@ def get_timing(algnum, algorithm, start_range, end_range, range_step):
         print(str(avg))
     print()
 
+
+test_accuracy()
 get_timing(1, mss_algorithm_01, 100, 1100, 100)
 get_timing(2, mss_algorithm_02, 1000, 11000, 1000)
 get_timing(3, mss_algorithm_03, 100000, 1100000, 100000)
