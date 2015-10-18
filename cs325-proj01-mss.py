@@ -67,47 +67,38 @@ def mss_algorithm_02(A):
 
 
 # Algorithm 3 - theta(n lg n)
-def findFirstMax(A):
-    reverseA = A[::-1]
-    currmax = reverseA[0]
-    currsum = 0
+def cross_subarray(A, start, mid, end):
+    left_sum = 0
+    maxleft_sum = float("-inf")
 
-    for i in reverseA:
-        currsum += i
-        if currsum > currmax:
-            currmax = currsum
+    for i in range(mid, start-1, -1):
+        left_sum = left_sum + A[i]
+        if left_sum > maxleft_sum:
+            maxleft_sum = left_sum
 
-    return currmax
+    right_sum = 0
+    maxright_sum = float("-inf")
 
-def findSecondMax(A):
-    currsum = 0
-    currmax = A[0]
+    for j in range(mid+1, end+1, 1):
+        right_sum = right_sum + A[j]
+        if right_sum > maxright_sum:
+            maxright_sum = right_sum
 
-    for i in A:
-        currsum += i
-        if currsum > currmax:
-            currmax = currsum
+    return maxleft_sum + maxright_sum
 
-    return currmax
+def mss_algorithm_03(A, start, end):
 
-def mss_algorithm_03(A):
-
-    if len(A) <= 1:
-        return A[0]
+    if start == end:
+        return A[start]
 
     else:
-        firstArr = A[:int(len(A)/2)]
-        secondArr = A[int(len(A)/2):]
+        mid = int((start + end)/2)
 
-        sum1 = mss_algorithm_03(firstArr) # If maximum subarray is contained entirely in the first half
-        sum2 = mss_algorithm_03(secondArr) # If maximum subarray is contained entirely in the second half
+        left_sum = mss_algorithm_03(A, start, mid)
+        right_sum = mss_algorithm_03(A, mid+1, end)
+        cross_sum = cross_subarray(A, start, mid, end)
 
-        sum3 = findFirstMax(firstArr) + findSecondMax(secondArr)
-
-        max_sum = max([sum1, sum2, sum3])
-
-        return max_sum
-
+        return max(left_sum, right_sum, cross_sum)
 
 
 # Algorithm 4 - theta(n) time
@@ -168,7 +159,7 @@ def test_accuracy():
     print("Algorithm 3 Results:")
     f.write("Algorithm 3 Results:" + "\n")
     for A in testarrays:
-        results = mss_algorithm_03(A)
+        results = mss_algorithm_03(A, 0, len(A)-1)
         print(results)
         #f.write(results[0])
         #f.write(results[1])
@@ -209,10 +200,14 @@ def get_timing(algnum, algorithm, start_range, end_range, range_step):
                 A.append(random.randint(-50, 50))
 
             #Runs algorithm and gets timing
-            start_time = time.time()
-            #mss_algorithm_01(A)
-            algorithm(A)
-            run_time = time.time() - start_time
+            if algorithm == mss_algorithm_03:
+                start_time = time.time()
+                algorithm(A, 0, len(A)-1)
+                run_time = time.time() - start_time
+            else:
+                start_time = time.time()
+                algorithm(A)
+                run_time = time.time() - start_time
 
             total_results.append(run_time)
 
